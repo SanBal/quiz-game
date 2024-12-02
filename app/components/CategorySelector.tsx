@@ -1,12 +1,9 @@
 import React from 'react'
 import TagSelector, { Tag } from './shared/TagSelector'
+import { Category } from '../model/Category';
 
-export enum Category {
-    SCIENCE,
-    SPORTS
-}
 const tags: Tag[] = [
-    { label: "Science", value: Category.SCIENCE },
+    { label: "Computer Science", value: Category.SCIENCE_COMPUTERS },
     { label: "Sports", value: Category.SPORTS },
 ]
 

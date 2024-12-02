@@ -1,11 +1,7 @@
 import React from 'react'
 import TagSelector, { Tag } from './shared/TagSelector'
+import { Difficulty } from '../model/Difficulty';
 
-export enum Difficulty {
-    EASY,
-    MEDIUM,
-    HARD
-}
 const tags: Tag[] = [
     { label: "Easy", value: Difficulty.EASY },
     { label: "Medium", value: Difficulty.MEDIUM },
