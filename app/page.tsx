@@ -13,9 +13,9 @@ import QuestionView from "./components/QuestionView";
 import PointsView from "./components/Points";
 import PointsForQuestion from "./components/PointsForQuestion";
 
-export default function Home() {
-  const questionsService = new QuestionsService();
+const questionsService = new QuestionsService();
 
+export default function Home() {
   const [category, setCategory] = useState<Category | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [question, setQuestion] = useState<Question | null>(null);

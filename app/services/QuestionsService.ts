@@ -44,7 +44,7 @@ export class QuestionsService {
             throw new Error(`Failed to fetch token: ${response.statusText}`);
         }
         const data: TokenResponse = await response.json();
-        this.token = data.token; // Store the token
+        this.token = data.token;
         return this.token;
     }
 }
