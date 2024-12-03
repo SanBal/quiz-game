@@ -13,6 +13,10 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
     }, [question]);
 
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+    const handleAnswerSubmit = () => {
+        selectedAnswer && onAnswerSubmit(selectedAnswer)
+        setSelectedAnswer(null)
+    }
 
     const parser = new DOMParser();
     const decodeHTML = (input: string): string => {
@@ -22,12 +26,12 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
 
     return (
         <div>
-            <h2>{decodeHTML(question.question)}</h2>
+            <h2 className='mb-4'>{decodeHTML(question.question)}</h2>
             {
                 shuffledAnswers.map((answer, index) => (
                     <div
                         key={index}
-                        className="answer-option p-4 border rounded cursor-pointer hover:bg-gray-200"
+                        className={`answer-option p-4 border rounded cursor-pointer hover:bg-red-400 ${answer === selectedAnswer ? 'bg-red-400' : 'none'}`}
                         onClick={() => setSelectedAnswer(answer === selectedAnswer ? null : answer)}>
                         {decodeHTML(answer)}
                     </div>
@@ -36,7 +40,7 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
             <button
                 className={`mt-4 px-4 py-2 rounded ${selectedAnswer ? 'bg-blue-500 text-white cursor-pointer' : 'bg-gray-300 text-gray-700 cursor-not-allowed'
                     }`}
-                onClick={() => { selectedAnswer && onAnswerSubmit(selectedAnswer) }}
+                onClick={handleAnswerSubmit}
                 disabled={!selectedAnswer}>
                 Submit
             </button>

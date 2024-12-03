@@ -14,11 +14,8 @@ interface DifficultySelectorProperties {
 
 const DifficultySelector: React.FC<DifficultySelectorProperties> = ({ onDifficultyClick }) => {
     return (
-        <div>
-            <h3>Difficulty</h3>
-            <TagSelector tags={tags} onTagClick={(tag) => onDifficultyClick(tag.value)}>
-            </TagSelector>
-        </div>
+        <TagSelector title='Difficulty' tags={tags} onTagClick={(tag) => onDifficultyClick(tag ? tag.value : null)}>
+        </TagSelector>
     )
 }
 

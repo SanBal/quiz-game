@@ -21,16 +21,18 @@ body {
 }
 
 .fade-in-out {
-  animation: fadeInOut 2s ease-out;
+  animation: fadeInOut 1s ease-out;
 }
 
 @keyframes fadeInOut {
   0% {
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }

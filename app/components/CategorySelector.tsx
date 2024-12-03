@@ -3,9 +3,13 @@ import TagSelector, { Tag } from './shared/TagSelector'
 import { Category } from '../model/Category';
 
 const tags: Tag[] = [
+    { label: "Celebrities", value: Category.CELEBRITIES },
     { label: "Computer Science", value: Category.SCIENCE_COMPUTERS },
-    { label: "Sports", value: Category.SPORTS },
-]
+    { label: "Film", value: Category.ENTERTAINMENT_FILM },
+    { label: "General Knowledge", value: Category.GENERAL_KNOWLEDGE },
+    { label: "Mathematics", value: Category.SCIENCE_MATHEMATICS },
+    { label: "Mythology", value: Category.MYTHOLOGY }
+];
 
 interface CategorySelectorProperties {
     onCategoryClick: (category: Category) => void;
@@ -13,11 +17,8 @@ interface CategorySelectorProperties {
 
 const CategorySelector: React.FC<CategorySelectorProperties> = ({ onCategoryClick }) => {
     return (
-        <div>
-            <h3>Category</h3>
-            <TagSelector tags={tags} onTagClick={(tag) => onCategoryClick(tag.value)}>
-            </TagSelector>
-        </div>
+        <TagSelector title='Category' tags={tags} onTagClick={(tag) => onCategoryClick(tag ? tag.value : null)}>
+        </TagSelector>
     )
 }
 

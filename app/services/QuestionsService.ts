@@ -16,12 +16,17 @@ interface TokenResponse {
 
 export class QuestionsService {
     private token?: string;
-    private questions: Question[] = []
+    public questions: Question[] = []
 
     public async fetchQuestion(category: Category, difficulty: Difficulty): Promise<Question> {
         if (this.questions.length === 0) {
             const url = `https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`;
             const response = await fetch(url);
+
+            if (response.status === 429) {
+                throw new Error('Quiz API can be accessed every 5 seconds.');
+            }
+
             if (!response.ok) {
                 throw new Error(`Failed to fetch data: ${response.statusText}`);
             }
@@ -35,6 +40,10 @@ export class QuestionsService {
             this.questions = data.results as Question[]
         }
         return this.questions.pop()!;
+    }
+
+    public reset(): void {
+        this.questions = []
     }
 
     private async getToken(): Promise<string> {
