@@ -10,6 +10,8 @@ import { Difficulty } from './model/Difficulty';
 import { Question, QuestionsService } from "./services/QuestionsService";
 import { log } from "console";
 import QuestionView from "./components/QuestionView";
+import PointsView from "./components/Points";
+import PointsForQuestion from "./components/PointsForQuestion";
 
 export default function Home() {
   const questionsService = new QuestionsService();
@@ -17,28 +19,47 @@ export default function Home() {
   const [category, setCategory] = useState<Category | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [question, setQuestion] = useState<Question | null>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [points, setPoints] = useState(0);
+  const [pointsForQuestion, setPointsForQuestion] = useState<number | null>(null);
 
+  const getQuestion = async () => {
+    if (category && difficulty) {
+      try {
+        const fetchedQuestion = await questionsService.fetchQuestion(category, difficulty);
+        setQuestion(fetchedQuestion);
+      } catch (error) {
+        console.error("Failed to fetch question:", error);
+      }
+    }
+  };
 
-  const handleAnswerSubmit = (answer: string) => {
-    console.log("print answer", answer)
-    setSelectedAnswer(answer)
+  const handleAnswerSubmit = async (answer: string) => {
+    const isCorrect = answer === question?.correct_answer;
+
+    let pointsForCurrentQuestion = 0;
+    if (isCorrect) {
+      switch (difficulty) {
+        case Difficulty.EASY:
+          pointsForCurrentQuestion = 10;
+          break;
+        case Difficulty.MEDIUM:
+          pointsForCurrentQuestion = 30;
+          break;
+        case Difficulty.HARD:
+          pointsForCurrentQuestion = 50;
+          break;
+      }
+    }
+    setPointsForQuestion(pointsForCurrentQuestion);
+
+    if (isCorrect) {
+      setPoints((prevPoints) => prevPoints + pointsForCurrentQuestion)
+    }
+
+    getQuestion();
   }
 
   useEffect(() => {
-    console.log("useEffect triggered");
-    const getQuestion = async () => {
-      console.log("getQuestions triggered");
-      if (category && difficulty) {
-        try {
-          const fetchedQuestion = await questionsService.fetchQuestion(category, difficulty);
-          console.log("Fetched Question: ", fetchedQuestion);
-          setQuestion(fetchedQuestion);
-        } catch (error: any) {
-          console.log("Could not fetch question", error);
-        }
-      }
-    };
     getQuestion();
   }, [category, difficulty]);
   return (
@@ -56,6 +77,10 @@ export default function Home() {
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           {question && <QuestionView question={question} onAnswerSubmit={(answer) => handleAnswerSubmit(answer)}></QuestionView>}
         </div>
+
+        
+       <PointsView points={points}></PointsView>
+       <PointsForQuestion points={pointsForQuestion} ></PointsForQuestion>
       </main>
 
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
