@@ -9,12 +9,21 @@ import DifficultySelector from "./components/DifficultySelector";
 import { Difficulty } from './model/Difficulty';
 import { Question, QuestionsService } from "./services/QuestionsService";
 import { log } from "console";
+import QuestionView from "./components/QuestionView";
 
 export default function Home() {
+  const questionsService = new QuestionsService();
+
   const [category, setCategory] = useState<Category | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [question, setQuestion] = useState<Question | null>(null);
-  const questionsService = new QuestionsService();
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+
+
+  const handleAnswerSubmit = (answer: string) => {
+    console.log("print answer", answer)
+    setSelectedAnswer(answer)
+  }
 
   useEffect(() => {
     console.log("useEffect triggered");
@@ -45,7 +54,7 @@ export default function Home() {
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
-          {question && <div>{question?.question}</div>}
+          {question && <QuestionView question={question} onAnswerSubmit={(answer) => handleAnswerSubmit(answer)}></QuestionView>}
         </div>
       </main>
 
