@@ -14,16 +14,22 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
 
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
 
+    const parser = new DOMParser();
+    const decodeHTML = (input: string): string => {
+        const decodedString = parser.parseFromString(input, 'text/html').documentElement.textContent;
+        return decodedString || input;
+    };
+
     return (
         <div>
-            <h2>{question.question}</h2>
+            <h2>{decodeHTML(question.question)}</h2>
             {
                 shuffledAnswers.map((answer, index) => (
                     <div
                         key={index}
                         className="answer-option p-4 border rounded cursor-pointer hover:bg-gray-200"
                         onClick={() => setSelectedAnswer(answer === selectedAnswer ? null : answer)}>
-                        {answer}
+                        {decodeHTML(answer)}
                     </div>
                 ))
             }
