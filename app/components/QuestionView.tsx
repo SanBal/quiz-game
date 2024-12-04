@@ -25,27 +25,27 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
     };
 
     return (
-        <div>
-            <h2 className='mb-4'>{decodeHTML(question.question)}</h2>
-            {
-                shuffledAnswers.map((answer, index) => (
-                    <div
-                        key={index}
-                        className={`answer-option p-4 border rounded cursor-pointer hover:bg-red-400 ${answer === selectedAnswer ? 'bg-red-400' : 'none'}`}
-                        onClick={() => setSelectedAnswer(answer === selectedAnswer ? null : answer)}>
-                        {decodeHTML(answer)}
-                    </div>
-                ))
-            }
+        <div className="question-container min-w-[800px] flex flex-col items-center justify-center">
+            <h2 className="mb-4 text-center">{decodeHTML(question.question)}</h2>
+            {shuffledAnswers.map((answer, index) => (
+                <div
+                    key={index}
+                    className={`answer-option p-4 border rounded cursor-pointer hover:bg-red-400 ${answer === selectedAnswer ? 'bg-red-400' : 'none'} min-w-[400px] text-center`}
+                    onClick={() => setSelectedAnswer(answer === selectedAnswer ? null : answer)}
+                >
+                    {decodeHTML(answer)}
+                </div>
+            ))}
             <button
                 className={`mt-4 px-4 py-2 rounded ${selectedAnswer ? 'bg-blue-500 text-white cursor-pointer' : 'bg-gray-300 text-gray-700 cursor-not-allowed'
                     }`}
                 onClick={handleAnswerSubmit}
-                disabled={!selectedAnswer}>
+                disabled={!selectedAnswer}
+            >
                 Submit
             </button>
         </div>
-    )
+    );
 }
 
 export default QuestionView

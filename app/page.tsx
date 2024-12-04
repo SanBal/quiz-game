@@ -66,25 +66,28 @@ export default function Home() {
   return (
     <div>
       <div className="grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <main className="flex flex-col gap-8 row-start-1 items-center sm:items-start">
+        {/* Main container keeps centered with mx-auto */}
+        <main className="flex flex-col gap-8 row-start-1 items-center sm:items-start w-full max-w-4xl mx-auto">
           <CategorySelector onCategoryClick={(category) => setCategory(category)} />
           <DifficultySelector onDifficultyClick={(difficulty) => setDifficulty(difficulty)} />
         </main>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <div className="w-full min-h-[150px] flex items-center justify-center">
-            {question ? (
+        {/* Question container takes same width as the main container */}
+        <div className="flex gap-4 items-center flex-col sm:flex-row border-0 w-full max-w-4xl mx-auto min-h-[300px] p-4">
+          {question ? (
+            <div className="w-full min-h-[150px] flex items-center justify-center">
               <QuestionView
                 question={question}
                 onAnswerSubmit={(answer) => handleAnswerSubmit(answer)}
               />
-            ) : (category && difficulty) ? (
-              <div className="text-gray-500">Loading question...</div>
-            ) : (
-              <div></div>
-            )}
-          </div>
+            </div>
+          ) : category && difficulty ? (
+            <div className="w-full min-h-[150px] flex items-center justify-center text-gray-500">
+              Loading question...
+            </div>
+          ) : null}
         </div>
+
         <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
           <a
             className="flex items-center gap-2 hover:underline hover:underline-offset-4"
