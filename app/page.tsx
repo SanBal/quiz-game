@@ -20,6 +20,7 @@ export default function Home() {
   const [question, setQuestion] = useState<Question | null>(null);
   const [points, setPoints] = useState(0);
   const [pointsForQuestion, setPointsForQuestion] = useState<number | null>(null);
+  const [pointsForQuestionVersion, setPointsForQuestionVersion] = useState<number>(0);
 
   const getQuestion = async () => {
     if (category && difficulty) {
@@ -51,6 +52,7 @@ export default function Home() {
       }
     }
     setPointsForQuestion(pointsForCurrentQuestion);
+    setPointsForQuestionVersion((prev) => prev + 1)
 
     if (isCorrect) {
       setPoints((prevPoints) => prevPoints + pointsForCurrentQuestion)
@@ -107,7 +109,7 @@ export default function Home() {
         </footer>
       </div>
       <PointsView points={points}></PointsView>
-      <PointsForQuestion points={pointsForQuestion}></PointsForQuestion>
+      <PointsForQuestion points={pointsForQuestion} version={pointsForQuestionVersion}></PointsForQuestion>
     </div>
   );
 }

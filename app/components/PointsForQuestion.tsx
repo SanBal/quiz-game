@@ -1,25 +1,28 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface PointsForQuestionProps {
     points: number | null;
+    version: number; // New prop to track updates explicitly
 }
 
-const PointsForQuestion: React.FC<PointsForQuestionProps> = memo(({ points }) => {
+const PointsForQuestion: React.FC<PointsForQuestionProps> = ({ points, version }) => {
     const [fadeClass, setFadeClass] = useState<string>('');
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [textColorClass, setTextColorClass] = useState<string>('text-white-500');
 
     useEffect(() => {
         if (points !== null) {
-            setTextColorClass(points > 0 ? "text-green-500" : "text-white-500")
+            setTextColorClass(points > 0 ? "text-green-500" : "text-white-500");
             setFadeClass("fade-in-out");
             setIsVisible(true);
+
             const timeout = setTimeout(() => {
                 setIsVisible(false);
             }, 1000);
+
             return () => clearTimeout(timeout);
         }
-    }, [points]);
+    }, [version]); // Depend on version
 
     return (
         isVisible && points !== null && (
@@ -28,6 +31,6 @@ const PointsForQuestion: React.FC<PointsForQuestionProps> = memo(({ points }) =>
             </div>
         )
     );
-});
+};
 
 export default PointsForQuestion;
