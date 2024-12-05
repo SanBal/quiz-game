@@ -7,11 +7,11 @@ interface PointsForQuestionProps {
 const PointsForQuestion: React.FC<PointsForQuestionProps> = memo(({ points }) => {
     const [fadeClass, setFadeClass] = useState<string>('');
     const [isVisible, setIsVisible] = useState<boolean>(false);
-    const [color, setColor] = useState<string>('white');
+    const [textColorClass, setTextColorClass] = useState<string>('text-white-500');
 
     useEffect(() => {
         if (points !== null) {
-            setColor(points > 0 ? "green" : "white")
+            setTextColorClass(points > 0 ? "text-green-500" : "text-white-500")
             setFadeClass("fade-in-out");
             setIsVisible(true);
             const timeout = setTimeout(() => {
@@ -23,7 +23,7 @@ const PointsForQuestion: React.FC<PointsForQuestionProps> = memo(({ points }) =>
 
     return (
         isVisible && points !== null && (
-            <div className={`${fadeClass} absolute top-32 right-4 text-7xl text-${color}-500`}>
+            <div className={`${fadeClass} absolute top-32 right-4 text-7xl ${textColorClass}`}>
                 <div>+{points}P</div>
             </div>
         )
