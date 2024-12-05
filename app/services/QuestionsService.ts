@@ -19,28 +19,55 @@ export class QuestionsService {
     public questions: Question[] = []
 
     public async fetchQuestion(category: Category, difficulty: Difficulty): Promise<Question> {
-        if (this.questions.length === 0) {
-            const url = `https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`;
-            const response = await fetch(url);
+        const maxRetries = 5;
+        const baseDelay = 1000;
 
-            if (response.status === 429) {
-                throw new Error('Quiz API can be accessed every 5 seconds.');
+        let attempts = 0;
+
+        while (attempts < maxRetries) {
+            try {
+                // Fetch new questions if the list is empty
+                if (this.questions.length === 0) {
+                    const url = `https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`;
+                    const response = await fetch(url);
+
+                    // Handle 429 status with a retry
+                    if (response.status === 429) {
+                        const delay = baseDelay * Math.pow(2, attempts);
+                        console.warn(`Rate limit reached. Retrying in ${delay / 1000} seconds...`);
+                        await this.sleep(delay);
+                        attempts++;
+                        continue;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch data: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (data.response_code !== 0) {
+                        throw new Error(`API returned error code: ${data.response_code}`);
+                    }
+
+                    this.questions = data.results as Question[];
+                }
+
+                return this.questions.pop()!;
+            } catch (error) {
+                console.error("Unexpected error:", error);
+                throw error;
             }
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch data: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-
-            if (data.response_code !== 0) {
-                throw new Error(`API returned error code: ${data.response_code}`);
-            }
-
-            this.questions = data.results as Question[]
         }
-        return this.questions.pop()!;
+
+        throw new Error("Failed to fetch a question after multiple retries.");
     }
+
+    // Helper function to delay execution
+    private sleep(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
 
     public reset(): void {
         this.questions = []
