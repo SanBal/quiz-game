@@ -35,7 +35,7 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
             {shuffledAnswers.map((answer, index) => (
                 <div
                     key={index}
-                    className={`answer-option p-4 border rounded cursor-pointer hover:bg-red-400 ${answer === selectedAnswer ? 'bg-red-400' : 'none'} min-w-[400px] text-center`}
+                    className={`answer-option p-4 border rounded cursor-pointer hover:bg-sky-400 ${answer === selectedAnswer ? 'bg-sky-400' : 'none'} min-w-[400px] text-center`}
                     onClick={() => setSelectedAnswer(answer === selectedAnswer ? null : answer)}
                 >
                     {decodeHTML(answer)}

@@ -24,7 +24,7 @@ const TagSelector: React.FC<TagSelectorProperties> = ({ title, tags, onTagClick 
             <div>{title}:</div>
             <div className="flex flex-row gap-4">
                 {tags.map(tag =>
-                    <div className={`rounded-lg border-solid border-2 p-1 cursor-pointer hover:scale-105 ${tag === selectedTag ? 'border-red-400' : 'none'}`}
+                    <div className={`rounded-lg border-solid border-2 p-1 cursor-pointer hover:scale-105 ${tag === selectedTag ? 'border-sky-400' : 'none'}`}
                         key={tag.label}
                         onClick={() => handleTagClick(tag)}>
                         {tag.label}
