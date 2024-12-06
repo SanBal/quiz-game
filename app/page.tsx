@@ -22,7 +22,7 @@ export default function Home() {
   const [pointsForQuestion, setPointsForQuestion] = useState<number | null>(null);
   const [pointsForQuestionVersion, setPointsForQuestionVersion] = useState<number>(0);
 
-  const getQuestion = async () => {
+  const setNextQuestion = async () => {
     if (category && difficulty) {
       try {
         setQuestion(null)
@@ -57,13 +57,11 @@ export default function Home() {
     if (isCorrect) {
       setPoints((prevPoints) => prevPoints + pointsForCurrentQuestion)
     }
-
-    getQuestion();
   }
 
   useEffect(() => {
     questionsService.reset()
-    getQuestion();
+    setNextQuestion();
   }, [category, difficulty]);
   return (
     <div>
@@ -81,6 +79,7 @@ export default function Home() {
               <QuestionView
                 question={question}
                 onAnswerSubmit={(answer) => handleAnswerSubmit(answer)}
+                onNext={() => setNextQuestion()}
               />
             </div>
           ) : category && difficulty ? (
