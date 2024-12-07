@@ -11,6 +11,7 @@ import { Question, QuestionsService } from "./services/QuestionsService";
 import QuestionView from "./components/QuestionView";
 import PointsView from "./components/PointsView";
 import PointsForQuestion from "./components/PointsForQuestion";
+import HintView from "./components/HintView";
 
 const questionsService = new QuestionsService();
 
@@ -21,10 +22,14 @@ export default function Home() {
   const [points, setPoints] = useState(0);
   const [pointsForQuestion, setPointsForQuestion] = useState<number | null>(null);
   const [pointsForQuestionVersion, setPointsForQuestionVersion] = useState<number>(0);
+  const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false)
+  const [isHintRequested, setIsHintRequested] = useState(false)
 
   const setNextQuestion = async () => {
     if (category && difficulty) {
       try {
+        setIsAnswerSubmitted(false)
+        setIsHintRequested(false)
         setQuestion(null)
         const fetchedQuestion = await questionsService.fetchQuestion(category, difficulty);
         setQuestion(fetchedQuestion);
@@ -35,6 +40,8 @@ export default function Home() {
   };
 
   const handleAnswerSubmit = async (answer: string) => {
+    setIsAnswerSubmitted(true)
+
     const isCorrect = answer === question?.correct_answer;
 
     let pointsForCurrentQuestion = 0;
@@ -63,9 +70,10 @@ export default function Home() {
     questionsService.reset()
     setNextQuestion();
   }, [category, difficulty]);
+
   return (
     <div>
-      <div className="grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="grid items-center justify-items-center min-h-screen p-8 pb-20 gap-12 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         {/* Main container keeps centered with mx-auto */}
         <main className="flex flex-col gap-8 row-start-1 items-center sm:items-start w-full max-w-4xl mx-auto">
           <CategorySelector onCategoryClick={(category) => setCategory(category)} />
@@ -88,6 +96,26 @@ export default function Home() {
             </div>
           ) : null}
         </div>
+
+        {question ?
+          <footer className="row-start-3 flex flex-col items-center justify-center">
+            <Image
+              aria-hidden
+              src="/light-bulb.svg"
+              alt="light bulb icon"
+              className="cursor-pointer hover:scale-105"
+              width={25}
+              height={25}
+              onClick={() => setIsHintRequested((prev) => !prev)}
+            />
+
+            <div className="flex border-0 w-full max-w-4xl mx-auto min-h-[100px] p-4">
+              {isHintRequested && !isAnswerSubmitted && <HintView question={question}></HintView>}
+            </div>
+
+          </footer>
+          : <div></div>
+        }
       </div>
       <PointsView points={points}></PointsView>
       <PointsForQuestion points={pointsForQuestion} version={pointsForQuestionVersion}></PointsForQuestion>
