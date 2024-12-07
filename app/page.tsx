@@ -9,17 +9,20 @@ import DifficultySelector from "./components/DifficultySelector";
 import { Difficulty } from './model/Difficulty';
 import { Question, QuestionsService } from "./services/QuestionsService";
 import QuestionView from "./components/QuestionView";
-import PointsView from "./components/PointsView";
 import PointsForQuestion from "./components/PointsForQuestion";
 import HintView from "./components/HintView";
+import StatsView from "./components/StatsView";
 
 const questionsService = new QuestionsService();
 
 export default function Home() {
   const [category, setCategory] = useState<Category | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
+  const [round, setRound] = useState(0)
+  const [numProcessedQuestions, setNumProcessedQuestions] = useState(0)
   const [question, setQuestion] = useState<Question | null>(null);
-  const [points, setPoints] = useState(0);
+  const [points, setPoints] = useState(0)
+  const [pointsPerRound, setPointsPerRound] = useState<number[]>([0]);
   const [pointsForQuestion, setPointsForQuestion] = useState<number | null>(null);
   const [pointsForQuestionVersion, setPointsForQuestionVersion] = useState<number>(0);
   const [isHintRequested, setIsHintRequested] = useState(false)
@@ -38,6 +41,8 @@ export default function Home() {
   };
 
   const handleAnswerSubmit = async (answer: string) => {
+    setNumProcessedQuestions((prev) => prev + 1)
+
     const isCorrect = answer === question?.correct_answer;
 
     let pointsForCurrentQuestion = 0;
@@ -60,6 +65,23 @@ export default function Home() {
     if (isCorrect) {
       setPoints((prevPoints) => prevPoints + pointsForCurrentQuestion)
     }
+
+    setPointsPerRound((prevPoints) => {
+      const updatedPoints = [...prevPoints];
+      updatedPoints[round] = updatedPoints[round] + pointsForCurrentQuestion;
+      return updatedPoints;
+    });
+  }
+
+  const handleOnNext = () => {
+    if (numProcessedQuestions === 5) {
+      setPointsPerRound((prevPoints) => {
+        return [...prevPoints, 0];
+      });
+      setNumProcessedQuestions(0);
+      setRound((prev) => prev + 1)
+    }
+    setNextQuestion()
   }
 
   useEffect(() => {
@@ -77,13 +99,17 @@ export default function Home() {
 
       {/* Middle Column (70%) */}
       <div className="col-span-10 md:col-span-6 flex flex-col justify-around items-center">
-        <h2 className="text-xl md:text-5xl font-bold text-center text-cyan-400">CHALLENGE YOURSELF</h2>
+        <div className="text-center space-y-2">
+          <h2 className="text-xl md:text-5xl font-bold text-center text-cyan-400">CHALLENGE YOURSELF</h2>
+          <div className="text-center text-cyan-400 text-lg">Select difficulty & category</div>
+        </div>
+
         {question ? (
           <div className="w-full flex items-center justify-center">
             <QuestionView
               question={question}
               onAnswerSubmit={(answer) => handleAnswerSubmit(answer)}
-              onNext={() => setNextQuestion()}
+              onNext={handleOnNext}
             />
           </div>
         ) : category && difficulty ? (
@@ -111,8 +137,8 @@ export default function Home() {
       </div>
 
       {/* Right Column (20%) */}
-      <div className="col-span-10 md:col-span-2 flex flex-col items-center">
-        <PointsView points={points} />
+      <div className="col-span-10 md:col-span-2 flex flex-col h-full">
+        <StatsView points={pointsPerRound} currentRound={round}></StatsView>
         <PointsForQuestion points={pointsForQuestion} version={pointsForQuestionVersion} />
       </div>
     </div>

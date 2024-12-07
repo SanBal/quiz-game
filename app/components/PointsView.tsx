@@ -8,7 +8,7 @@ interface PointsProperties {
 
 const PointsView: React.FC<PointsProperties> = ({ points }) => {
   return (
-    <div className="absolute top-4 right-4 text-3xl font-bold">{points}P</div>
+    <div className="text-3xl font-bold">{points}P</div>
   )
 }
 

@@ -3,9 +3,9 @@ import TagSelector, { Tag } from './shared/TagSelector'
 import { Difficulty } from '../model/Difficulty';
 
 const tags: Tag[] = [
-    { label: "Easy", value: Difficulty.EASY },
-    { label: "Medium", value: Difficulty.MEDIUM },
-    { label: "Hard", value: Difficulty.HARD }
+    { label: "Easy (10P)", value: Difficulty.EASY },
+    { label: "Medium (20P)", value: Difficulty.MEDIUM },
+    { label: "Hard (30P)", value: Difficulty.HARD }
 ]
 
 interface DifficultySelectorProperties {
