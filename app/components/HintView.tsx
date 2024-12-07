@@ -10,7 +10,6 @@ const HintView: React.FC<HintViewProperties> = ({ question }) => {
     const [hint, setHint] = useState<string | null>(null)
 
     const fetchHint = async () => {
-        console.log('get hint', question)
         setHint(await getHintFor(question))
     }
 
@@ -19,7 +18,7 @@ const HintView: React.FC<HintViewProperties> = ({ question }) => {
     }, [question])
 
     return (
-        <div>{hint}</div>
+        <div className='text-center'>{hint}</div>
     )
 }
 

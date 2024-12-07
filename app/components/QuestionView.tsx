@@ -59,28 +59,32 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
     };
 
     return (
-        <div className="question-container min-w-[800px] flex flex-col items-center justify-center">
-            <h2 className="mb-4 text-center">{decodeHTML(question.question)}</h2>
+        <div className="question-container w-full flex flex-col items-center justify-center gap-4 p-4">
+            <h2 className="mb-4 text-center text-lg md:text-3xl font-bold">{decodeHTML(question.question)}</h2>
             {shuffledAnswers.map((answer, index) => (
                 <div
                     key={index}
-                    className={`answer-option p-4 border rounded  ${!isAnswerSubmitted ? 'cursor-pointer hover:bg-sky-400': 'cursor-not-allowed'} ${getAnswerBackgroundColor(answer)} min-w-[400px] text-center`}
+                    className={`answer-option p-4 md:p-6 border-2 rounded-lg text-sm md:text-xl font-semibold 
+            ${!isAnswerSubmitted ? 'cursor-pointer hover:bg-sky-400' : 'cursor-not-allowed'} 
+            ${getAnswerBackgroundColor(answer)} 
+            w-full max-w-[600px] text-center`}
                     onClick={() => handleAnswerClick(answer)}
                 >
                     {decodeHTML(answer)}
                 </div>
             ))}
-            <div className="flex flex-row justify-around min-w-[400px]">
+            <div className="flex flex-row justify-around w-full max-w-[600px] gap-2 md:gap-4">
                 <button
-                    className={`mt-4 px-4 py-2 rounded ${isSubmitEnabled ? 'bg-blue-500 text-white cursor-pointer' : 'bg-gray-300 text-gray-700 cursor-not-allowed'
-                        }`}
+                    className={`mt-4 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-lg font-medium 
+            ${isSubmitEnabled ? 'bg-blue-500 text-white cursor-pointer' : 'bg-gray-300 text-gray-700 cursor-not-allowed'}`}
                     onClick={handleAnswerSubmit}
                     disabled={!isSubmitEnabled}
                 >
                     Submit
                 </button>
                 <button
-                    className={`mt-4 px-4 py-2 rounded ${isNextEnabled ? 'bg-blue-500 text-white cursor-pointer' : 'bg-gray-300 text-gray-700 cursor-not-allowed'}`}
+                    className={`mt-4 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-lg font-medium 
+            ${isNextEnabled ? 'bg-blue-500 text-white cursor-pointer' : 'bg-gray-300 text-gray-700 cursor-not-allowed'}`}
                     onClick={handleOnNext}
                     disabled={!isNextEnabled}
                 >

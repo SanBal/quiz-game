@@ -20,15 +20,20 @@ const TagSelector: React.FC<TagSelectorProperties> = ({ title, tags, onTagClick 
         }
     }
     return (
-        <div className="flex items-center gap-4">
-            <div>{title}:</div>
-            <div className="flex flex-row gap-4">
-                {tags.map(tag =>
-                    <div className={`rounded-lg border-solid border-2 p-1 cursor-pointer hover:scale-105 ${tag === selectedTag ? 'border-sky-400' : 'none'}`}
+        <div className="flex flex-col items-center gap-1 w-full px-2">
+            <div className="font-bold text-2xl text-cyan-400">{title.toUpperCase()}</div>
+            <div className="flex flex-col gap-1 w-full">
+                {tags.map((tag) => (
+                    <div
                         key={tag.label}
-                        onClick={() => handleTagClick(tag)}>
+                        className={`p-2 cursor-pointer hover:scale-105 text-center
+                ${tag === selectedTag ? 'text-sky-400': 'none'}
+              `}
+                        onClick={() => handleTagClick(tag)}
+                    >
                         {tag.label}
-                    </div>)}
+                    </div>
+                ))}
             </div>
         </div>
     )
