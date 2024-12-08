@@ -21,7 +21,6 @@ export default function Home() {
   const [round, setRound] = useState(0)
   const [numProcessedQuestions, setNumProcessedQuestions] = useState(0)
   const [question, setQuestion] = useState<Question | null>(null);
-  const [points, setPoints] = useState(0)
   const [pointsPerRound, setPointsPerRound] = useState<number[]>([0]);
   const [pointsForQuestion, setPointsForQuestion] = useState<number | null>(null);
   const [pointsForQuestionVersion, setPointsForQuestionVersion] = useState<number>(0);
@@ -61,10 +60,6 @@ export default function Home() {
     }
     setPointsForQuestion(pointsForCurrentQuestion);
     setPointsForQuestionVersion((prev) => prev + 1)
-
-    if (isCorrect) {
-      setPoints((prevPoints) => prevPoints + pointsForCurrentQuestion)
-    }
 
     setPointsPerRound((prevPoints) => {
       const updatedPoints = [...prevPoints];
