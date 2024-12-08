@@ -78,38 +78,44 @@ export default function Home() {
   }
 
   const handleOnNext = () => {
-    if (numProcessedQuestions === MAX_QUESTIONS) {
+    if (numProcessedQuestions === MAX_QUESTIONS && round !== MAX_ROUNDS) {
+      setNumProcessedQuestions(0);
       setPointsPerRound((prevPoints) => {
         return [...prevPoints, 0];
       });
-      setNumProcessedQuestions(0);
-
-      if (round === MAX_ROUNDS) {
-        const maxPoints = Math.max(...pointsPerRound);
-        alert(`5 rounds completed, congrats! Your highscore are ${maxPoints} points. Try to beat it and choose maybe different category and difficulty!`);
-        setRound(1)
-        setPointsPerRound([0])
-        setDifficulty(null)
-        setCategory(null)
-
-        if (difficultySelectorRef?.current) {
-          difficultySelectorRef.current.reset()
-        }
-
-        if (categorySelectorRef?.current) {
-          categorySelectorRef.current.reset()
-        }
-      } else {
-        setRound((prev) => prev + 1)
-        setNextQuestion()
-      }
+      setRound((prev) => prev + 1)
     }
+    setNextQuestion()
   }
 
   useEffect(() => {
     questionsService.reset()
     setNextQuestion();
   }, [category, difficulty]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (numProcessedQuestions === MAX_QUESTIONS && round === MAX_ROUNDS) {
+        const maxPoints = Math.max(...pointsPerRound);
+        alert(`5 rounds completed, congrats! Your highscore are ${maxPoints} points. Try to beat it and choose maybe different category and difficulty!`);
+        setNumProcessedQuestions(0);
+        setRound(1);
+        setPointsForQuestion(null);
+        setPointsPerRound([0]);
+        setDifficulty(null);
+        setCategory(null);
+
+        if (difficultySelectorRef?.current) {
+          difficultySelectorRef.current.reset();
+        }
+
+        if (categorySelectorRef?.current) {
+          categorySelectorRef.current.reset();
+        }
+      }
+    }, 1000)
+
+  }, [numProcessedQuestions, round, pointsPerRound]);
 
   return (
     <div className="grid grid-cols-10 min-h-screen">
