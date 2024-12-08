@@ -1,101 +1,162 @@
+'use client'
+
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+
+import CategorySelector from "./components/CategorySelector";
+import { Category } from './model/Category';
+import DifficultySelector from "./components/DifficultySelector";
+import { Difficulty } from './model/Difficulty';
+import { Question, QuestionsService } from "./services/QuestionsService";
+import QuestionView from "./components/QuestionView";
+import PointsForQuestion from "./components/PointsForQuestion";
+import HintView from "./components/HintView";
+import StatsView from "./components/StatsView";
+
+const questionsService = new QuestionsService();
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const MAX_ROUNDS = 5;
+  const MAX_QUESTIONS = 5;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [category, setCategory] = useState<Category | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
+  const [round, setRound] = useState(1)
+  const [numProcessedQuestions, setNumProcessedQuestions] = useState(0)
+  const [question, setQuestion] = useState<Question | null>(null);
+  const [pointsPerRound, setPointsPerRound] = useState<number[]>([0]);
+  const [pointsForQuestion, setPointsForQuestion] = useState<number | null>(null);
+  const [pointsForQuestionVersion, setPointsForQuestionVersion] = useState<number>(0);
+  const [isHintRequested, setIsHintRequested] = useState(false)
+
+  const categorySelectorRef = useRef<any>(null);
+  const difficultySelectorRef = useRef<any>(null);
+
+  const setNextQuestion = async () => {
+    setIsHintRequested(false)
+    if (category && difficulty) {
+      try {
+        setQuestion(null)
+        const fetchedQuestion = await questionsService.fetchQuestion(category, difficulty);
+        setQuestion(fetchedQuestion);
+      } catch (error) {
+        console.error("Failed to fetch question:", error);
+      }
+    } else {
+      setQuestion(null)
+    }
+  };
+
+  const handleAnswerSubmit = async (answer: string) => {
+    setNumProcessedQuestions((prev) => prev + 1)
+
+    const isCorrect = answer === question?.correct_answer;
+
+    let pointsForCurrentQuestion = 0;
+    if (isCorrect) {
+      switch (difficulty) {
+        case Difficulty.EASY:
+          pointsForCurrentQuestion = 10;
+          break;
+        case Difficulty.MEDIUM:
+          pointsForCurrentQuestion = 30;
+          break;
+        case Difficulty.HARD:
+          pointsForCurrentQuestion = 50;
+          break;
+      }
+    }
+    setPointsForQuestion(pointsForCurrentQuestion);
+    setPointsForQuestionVersion((prev) => prev + 1)
+
+    setPointsPerRound((prevPoints) => {
+      const updatedPoints = [...prevPoints];
+      updatedPoints[round - 1] = updatedPoints[round - 1] + pointsForCurrentQuestion;
+      return updatedPoints;
+    });
+  }
+
+  const handleOnNext = () => {
+    if (numProcessedQuestions === MAX_QUESTIONS) {
+      setPointsPerRound((prevPoints) => {
+        return [...prevPoints, 0];
+      });
+      setNumProcessedQuestions(0);
+
+      if (round === MAX_ROUNDS) {
+        const maxPoints = Math.max(...pointsPerRound);
+        alert(`5 rounds completed, congrats! Your highscore are ${maxPoints} points. Try to beat it and choose maybe different category and difficulty!`);
+        setRound(1)
+        setPointsPerRound([0])
+        setDifficulty(null)
+        setCategory(null)
+        difficultySelectorRef.current.reset()
+        categorySelectorRef.current.reset()
+      } else {
+        setRound((prev) => prev + 1)
+        setNextQuestion()
+      }
+    }
+  }
+
+  useEffect(() => {
+    questionsService.reset()
+    setNextQuestion();
+  }, [category, difficulty]);
+
+  return (
+    <div className="grid grid-cols-10 min-h-screen">
+      {/* Left Column (10%) */}
+      <div className="col-span-10 md:col-span-2 flex flex-col justify-around h-full bg-slate-700">
+        <DifficultySelector ref={difficultySelectorRef} onDifficultyClick={(difficulty) => setDifficulty(difficulty)} />
+        <CategorySelector ref={categorySelectorRef} onCategoryClick={(category) => setCategory(category)} />
+      </div>
+
+      {/* Middle Column (70%) */}
+      <div className="col-span-10 md:col-span-6 flex flex-col justify-around items-center">
+        <div className="text-center space-y-2">
+          <h2 className="text-xl md:text-5xl font-bold text-center text-cyan-400">CHALLENGE YOURSELF</h2>
+          <div className="text-center text-cyan-400 text-lg">Select difficulty & category</div>
+          <div className="text-center text-cyan-400 text-sm">{MAX_ROUNDS} Rounds  & {MAX_QUESTIONS} Questions per Round</div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {question ? (
+          <div className="w-full flex items-center justify-center">
+            <QuestionView
+              question={question}
+              onAnswerSubmit={(answer) => handleAnswerSubmit(answer)}
+              onNext={handleOnNext}
+            />
+          </div>
+        ) : category && difficulty ? (
+          <div className="w-full flex items-center justify-center text-gray-500">
+            Loading question...
+          </div>
+        ) : null}
+
+        {question && (
+          <div className="flex flex-col items-center">
+            <Image
+              aria-hidden
+              src="./light-bulb.svg"
+              alt="light bulb icon"
+              className="cursor-pointer hover:scale-105"
+              width={40}
+              height={40}
+              onClick={() => setIsHintRequested((prev) => !prev)}
+            />
+            <div className="flex border-0 w-full max-w-2xl mx-auto min-h-[100px] p-4">
+              {isHintRequested && <HintView question={question}></HintView>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Right Column (20%) */}
+      <div className="col-span-10 md:col-span-2 flex flex-col h-full mt-8">
+        <StatsView points={pointsPerRound} currentRound={round}></StatsView>
+        <PointsForQuestion points={pointsForQuestion} version={pointsForQuestionVersion} />
+      </div>
     </div>
   );
 }
