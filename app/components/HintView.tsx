@@ -18,7 +18,9 @@ const HintView: React.FC<HintViewProperties> = ({ question }) => {
     }, [question])
 
     return (
-        <div className='text-center'>{hint}</div>
+        <div className='text-center'>{hint ? hint :
+            <div className="text-gray-500"> Loading hint...</div>}
+        </div>
     )
 }
 
