@@ -138,7 +138,7 @@ export default function Home() {
           <div className="flex flex-col items-center">
             <Image
               aria-hidden
-              src="/light-bulb.svg"
+              src="./light-bulb.svg"
               alt="light bulb icon"
               className="cursor-pointer hover:scale-105"
               width={40}
