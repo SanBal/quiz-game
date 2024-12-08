@@ -26,7 +26,7 @@ const PointsForQuestion: React.FC<PointsForQuestionProps> = ({ points, version }
 
     return (
         isVisible && points !== null && (
-            <div className={`${fadeClass} absolute bottom-32 right-4 text-7xl ${textColorClass}`}>
+            <div className={`${fadeClass} absolute bottom-32 right-32 text-7xl ${textColorClass}`}>
                 <div>+{points}P</div>
             </div>
         )

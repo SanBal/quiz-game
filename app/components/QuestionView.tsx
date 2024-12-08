@@ -73,7 +73,7 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
                     {decodeHTML(answer)}
                 </div>
             ))}
-            <div className="flex flex-row justify-around w-full max-w-[600px] gap-2 md:gap-4">
+            <div className="flex flex-row justify-center w-full max-w-[600px] gap-2 md:gap-4">
                 <button
                     className={`mt-4 px-4 md:px-6 py-2 md:py-3 rounded-lg text-sm md:text-lg font-medium 
             ${isSubmitEnabled ? 'bg-blue-500 text-white cursor-pointer' : 'bg-gray-300 text-gray-700 cursor-not-allowed'}`}

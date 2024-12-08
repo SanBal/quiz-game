@@ -137,7 +137,7 @@ export default function Home() {
       </div>
 
       {/* Right Column (20%) */}
-      <div className="col-span-10 md:col-span-2 flex flex-col h-full">
+      <div className="col-span-10 md:col-span-2 flex flex-col h-full mt-8">
         <StatsView points={pointsPerRound} currentRound={round}></StatsView>
         <PointsForQuestion points={pointsForQuestion} version={pointsForQuestionVersion} />
       </div>
