@@ -1,5 +1,9 @@
 import React, { useState, useImperativeHandle, forwardRef } from 'react';
 
+export interface TagSelectorRef {
+    reset: () => void;
+}
+
 interface TagSelectorProperties {
     title: string;
     tags: Tag[];
@@ -8,10 +12,11 @@ interface TagSelectorProperties {
 
 export interface Tag {
     label: string;
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     value: any;
 }
 
-const TagSelector = forwardRef(
+const TagSelector = forwardRef<TagSelectorRef, TagSelectorProperties>(
     ({ title, tags, onTagClick }: TagSelectorProperties, ref) => {
         const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
@@ -49,5 +54,7 @@ const TagSelector = forwardRef(
         );
     }
 );
+
+TagSelector.displayName = 'TagSelector';
 
 export default TagSelector;

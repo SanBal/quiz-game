@@ -27,7 +27,9 @@ const QuestionView: React.FC<QuestionViewProperties> = ({ question, onAnswerSubm
 
     const handleAnswerSubmit = () => {
         setIsSubmitEnabled(false)
-        selectedAnswer && onAnswerSubmit(selectedAnswer)
+        if (selectedAnswer) {
+            onAnswerSubmit(selectedAnswer)
+        }
         setIsNextEnabled(true)
     }
 

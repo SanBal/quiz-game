@@ -12,6 +12,7 @@ import QuestionView from "./components/QuestionView";
 import PointsForQuestion from "./components/PointsForQuestion";
 import HintView from "./components/HintView";
 import StatsView from "./components/StatsView";
+import { TagSelectorRef } from "./components/shared/TagSelector";
 
 const questionsService = new QuestionsService();
 
@@ -29,8 +30,8 @@ export default function Home() {
   const [pointsForQuestionVersion, setPointsForQuestionVersion] = useState<number>(0);
   const [isHintRequested, setIsHintRequested] = useState(false)
 
-  const categorySelectorRef = useRef<any>(null);
-  const difficultySelectorRef = useRef<any>(null);
+  const categorySelectorRef = useRef<TagSelectorRef>(null);
+  const difficultySelectorRef = useRef<TagSelectorRef>(null);
 
   const setNextQuestion = async () => {
     setIsHintRequested(false)
@@ -90,8 +91,14 @@ export default function Home() {
         setPointsPerRound([0])
         setDifficulty(null)
         setCategory(null)
-        difficultySelectorRef.current.reset()
-        categorySelectorRef.current.reset()
+
+        if (difficultySelectorRef?.current) {
+          difficultySelectorRef.current.reset()
+        }
+
+        if (categorySelectorRef?.current) {
+          categorySelectorRef.current.reset()
+        }
       } else {
         setRound((prev) => prev + 1)
         setNextQuestion()

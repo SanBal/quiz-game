@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react'
-import TagSelector, { Tag } from './shared/TagSelector'
+import TagSelector, { Tag, TagSelectorRef } from './shared/TagSelector'
 import { Difficulty } from '../model/Difficulty';
 
 const tags: Tag[] = [
@@ -12,7 +12,7 @@ interface DifficultySelectorProperties {
     onDifficultyClick: (difficulty: Difficulty) => void;
 }
 
-const DifficultySelector = forwardRef(
+const DifficultySelector = forwardRef<TagSelectorRef, DifficultySelectorProperties>(
     ({ onDifficultyClick }: DifficultySelectorProperties, ref) => {
         return (
             <TagSelector
@@ -24,5 +24,7 @@ const DifficultySelector = forwardRef(
         );
     }
 );
+
+DifficultySelector.displayName = 'DifficultySelector';
 
 export default DifficultySelector

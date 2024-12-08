@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import TagSelector, { Tag } from './shared/TagSelector';
+import TagSelector, { Tag, TagSelectorRef } from './shared/TagSelector';
 import { Category } from '../model/Category';
 
 const tags: Tag[] = [
@@ -15,7 +15,7 @@ interface CategorySelectorProperties {
     onCategoryClick: (category: Category | null) => void;
 }
 
-const CategorySelector = forwardRef(
+const CategorySelector = forwardRef<TagSelectorRef, CategorySelectorProperties>(
     ({ onCategoryClick }: CategorySelectorProperties, ref) => {
         return (
             <TagSelector
@@ -27,5 +27,7 @@ const CategorySelector = forwardRef(
         );
     }
 );
+
+CategorySelector.displayName = 'CategorySelector';
 
 export default CategorySelector;
