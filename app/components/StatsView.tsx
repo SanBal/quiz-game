@@ -17,7 +17,7 @@ const StatsView: React.FC<StatsProperties> = ({ points, currentRound }) => {
                 </thead>
                 <tbody>
                     {points.map((point, index) => (
-                        <tr key={index} className={`${currentRound === index ? 'bg-cyan-400' : 'none'}`}>
+                        <tr key={index} className={`${currentRound === index + 1 ? 'bg-cyan-400' : 'none'}`}>
                             <td className="px-4 py-2 border-b">{index + 1}</td>
                             <td className="px-4 py-2 border-b">{point}</td>
                         </tr>

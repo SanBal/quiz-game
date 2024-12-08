@@ -1,7 +1,7 @@
 'use client'
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import CategorySelector from "./components/CategorySelector";
 import { Category } from './model/Category';
@@ -16,9 +16,12 @@ import StatsView from "./components/StatsView";
 const questionsService = new QuestionsService();
 
 export default function Home() {
+  const MAX_ROUNDS = 5;
+  const MAX_QUESTIONS = 5;
+
   const [category, setCategory] = useState<Category | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
-  const [round, setRound] = useState(0)
+  const [round, setRound] = useState(1)
   const [numProcessedQuestions, setNumProcessedQuestions] = useState(0)
   const [question, setQuestion] = useState<Question | null>(null);
   const [pointsPerRound, setPointsPerRound] = useState<number[]>([0]);
@@ -26,16 +29,21 @@ export default function Home() {
   const [pointsForQuestionVersion, setPointsForQuestionVersion] = useState<number>(0);
   const [isHintRequested, setIsHintRequested] = useState(false)
 
+  const categorySelectorRef = useRef<any>(null);
+  const difficultySelectorRef = useRef<any>(null);
+
   const setNextQuestion = async () => {
+    setIsHintRequested(false)
     if (category && difficulty) {
       try {
-        setIsHintRequested(false)
         setQuestion(null)
         const fetchedQuestion = await questionsService.fetchQuestion(category, difficulty);
         setQuestion(fetchedQuestion);
       } catch (error) {
         console.error("Failed to fetch question:", error);
       }
+    } else {
+      setQuestion(null)
     }
   };
 
@@ -63,20 +71,32 @@ export default function Home() {
 
     setPointsPerRound((prevPoints) => {
       const updatedPoints = [...prevPoints];
-      updatedPoints[round] = updatedPoints[round] + pointsForCurrentQuestion;
+      updatedPoints[round - 1] = updatedPoints[round - 1] + pointsForCurrentQuestion;
       return updatedPoints;
     });
   }
 
   const handleOnNext = () => {
-    if (numProcessedQuestions === 5) {
+    if (numProcessedQuestions === MAX_QUESTIONS) {
       setPointsPerRound((prevPoints) => {
         return [...prevPoints, 0];
       });
       setNumProcessedQuestions(0);
-      setRound((prev) => prev + 1)
+
+      if (round === MAX_ROUNDS) {
+        const maxPoints = Math.max(...pointsPerRound);
+        alert(`5 rounds completed, congrats! Your highscore are ${maxPoints} points. Try to beat it and choose maybe different category and difficulty!`);
+        setRound(1)
+        setPointsPerRound([0])
+        setDifficulty(null)
+        setCategory(null)
+        difficultySelectorRef.current.reset()
+        categorySelectorRef.current.reset()
+      } else {
+        setRound((prev) => prev + 1)
+        setNextQuestion()
+      }
     }
-    setNextQuestion()
   }
 
   useEffect(() => {
@@ -88,8 +108,8 @@ export default function Home() {
     <div className="grid grid-cols-10 min-h-screen">
       {/* Left Column (10%) */}
       <div className="col-span-10 md:col-span-2 flex flex-col justify-around h-full bg-slate-700">
-        <DifficultySelector onDifficultyClick={(difficulty) => setDifficulty(difficulty)} />
-        <CategorySelector onCategoryClick={(category) => setCategory(category)} />
+        <DifficultySelector ref={difficultySelectorRef} onDifficultyClick={(difficulty) => setDifficulty(difficulty)} />
+        <CategorySelector ref={categorySelectorRef} onCategoryClick={(category) => setCategory(category)} />
       </div>
 
       {/* Middle Column (70%) */}
@@ -97,6 +117,7 @@ export default function Home() {
         <div className="text-center space-y-2">
           <h2 className="text-xl md:text-5xl font-bold text-center text-cyan-400">CHALLENGE YOURSELF</h2>
           <div className="text-center text-cyan-400 text-lg">Select difficulty & category</div>
+          <div className="text-center text-cyan-400 text-sm">{MAX_ROUNDS} Rounds  & {MAX_QUESTIONS} Questions per Round</div>
         </div>
 
         {question ? (

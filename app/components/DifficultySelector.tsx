@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import TagSelector, { Tag } from './shared/TagSelector'
 import { Difficulty } from '../model/Difficulty';
 
@@ -12,11 +12,17 @@ interface DifficultySelectorProperties {
     onDifficultyClick: (difficulty: Difficulty) => void;
 }
 
-const DifficultySelector: React.FC<DifficultySelectorProperties> = ({ onDifficultyClick }) => {
-    return (
-        <TagSelector title='Difficulty' tags={tags} onTagClick={(tag) => onDifficultyClick(tag ? tag.value : null)}>
-        </TagSelector>
-    )
-}
+const DifficultySelector = forwardRef(
+    ({ onDifficultyClick }: DifficultySelectorProperties, ref) => {
+        return (
+            <TagSelector
+                ref={ref}
+                title='Difficulty'
+                tags={tags}
+                onTagClick={(tag) => onDifficultyClick(tag ? tag.value : null)}>
+            </TagSelector>
+        );
+    }
+);
 
 export default DifficultySelector
